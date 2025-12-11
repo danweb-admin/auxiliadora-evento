@@ -15,7 +15,12 @@ export class EventoService {
     return this.http.get<any[]>(`${this.baseUrl}/eventos/get-all`);
   }
 
-
+  getReenvioComprovante(codigoInscricao: string, email: string): Observable<any> {
+    return this.http.get(`${this.baseUrl}/eventos/reenvio-comprovante/?codigoInscricao=${codigoInscricao}&email=${email}`)
+    .pipe(map((resp: any) => {
+      return resp;
+    }));
+  }
 
   getById(id: string): Observable<any> {
     return this.http.get(`${this.baseUrl}/eventos/${id}`)

@@ -162,7 +162,7 @@ export class InscricaoDialogComponent implements OnInit{
         this.toastr.success('A inscrição será efetivada após o pagamento!');
 
         this.qrCode = true;
-        this.qrCodeLink = resp.linkQrCodePNG;
+        this.qrCodeLink = `data:image/png;base64,${resp.linkQrCodeBase64}`;
         this.pixCopiaECola = resp.qrCodeCopiaCola;
         this.mostrarCartao = false;
       }

@@ -1,0 +1,76 @@
+<div *ngIf="isOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div class="bg-white rounded-lg shadow-lg w-full max-w-2xl p-6 relative max-h-[90vh] overflow-y-auto">
+
+    <!-- Botão fechar -->
+    <button
+      (click)="fechar()"
+      class="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-xl"
+    >
+      ✖
+    </button>
+
+    <!-- Título -->
+    <h2 class="text-xl font-bold mb-4">Reenviar Comprovante</h2>
+
+    <!-- Dados da inscrição -->
+    <div class="space-y-3 bg-gray-100 p-4 rounded-lg mb-5">
+      
+      <p>
+        <strong>Código Inscrição:</strong>
+        {{ inscricao?.codigoInscricao }}
+      </p>
+
+      <p>
+        <strong>Nome:</strong>
+        {{ inscricao?.nome }}
+      </p>
+
+      <p>
+        <strong>Telefone:</strong>
+        {{ inscricao?.telefone }}
+      </p>
+
+      <p>
+        <strong>Grupo de Oração:</strong>
+        {{ inscricao?.grupoDeOracao }}
+      </p>
+
+      <p>
+        <strong>Decanato:</strong>
+        {{ inscricao?.decanato }}
+      </p>
+    </div>
+
+    <!-- Formulário: email editável -->
+    <form [formGroup]="form" class="space-y-4">
+      <div>
+        <label class="font-medium">E-mail para envio</label>
+        <input
+          type="email"
+          formControlName="email"
+          class="w-full border rounded-lg px-3 py-2 mt-1 focus:ring focus:ring-blue-300"
+          placeholder="Digite o e-mail"
+        />
+      </div>
+    </form>
+
+    <!-- Botões -->
+    <div class="flex justify-between mt-6">
+      <button
+        (click)="fechar()"
+        type="button"
+        class="px-4 py-2 border rounded text-sm hover:bg-gray-100"
+      >
+        Cancelar
+      </button>
+
+      <button
+        (click)="reenviarComprovante()"
+        class="px-4 py-2 bg-pink-500 text-white text-sm rounded hover:bg-pink-600"
+      >
+        Reenviar
+      </button>
+    </div>
+
+  </div>
+</div>

@@ -1,11 +1,10 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
 import { AdminComponent } from './admin/admin.component';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { EventoLandingComponent } from './landing/evento-landing/evento-landing.component';
 import { LandingModule } from './landing/landing.module';
@@ -13,8 +12,9 @@ import { ToastrModule } from 'ngx-toastr';
 import { AngularEditorModule } from '@kolkov/angular-editor';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgxMaskModule } from 'ngx-mask';
-import { TokenInterceptor } from './interceptor.service';
+import { Interceptor } from './interceptor.service';
 import { SpinnerComponent } from './spinner.component';
+import { TokenInterceptor } from './admin/services/token.interceptor';
 
 
 @NgModule({
@@ -28,6 +28,7 @@ import { SpinnerComponent } from './spinner.component';
     BrowserModule,
     BrowserAnimationsModule,
     ReactiveFormsModule,
+    FormsModule,
     AppRoutingModule,
     HttpClientModule,
     LandingModule,
@@ -40,7 +41,12 @@ import { SpinnerComponent } from './spinner.component';
     }),
   ],
   providers: [
-    { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: Interceptor, multi: true },
+    {
+    provide: HTTP_INTERCEPTORS,
+    useClass: TokenInterceptor,
+    multi: true
+  }
   ],
   bootstrap: [AppComponent]
 })

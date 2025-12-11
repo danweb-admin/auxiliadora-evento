@@ -3,11 +3,14 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { AdminRoutingModule } from './admin-routing.module';
-import { SectionFormComponent } from './section-form/section-form.component';
 import { SectionListComponent } from './section-list/ section-list.component';
 import { EventoFormComponent } from './evento-form/evento-form.component';
 import { EventoListComponent } from './evento-list/evento-list.component';
 import { AngularEditorModule } from '@kolkov/angular-editor';
+import { SectionFormComponent } from './section-form/section-form.component';
+import { ModalReenvioComponent } from './modal-reenvio/modal-reenvio.component';
+import { LoginComponent } from './login/login.component';
+import { AuthLayoutComponent } from './auth/auth-layout.component';
 
 
 @NgModule({
@@ -15,7 +18,10 @@ import { AngularEditorModule } from '@kolkov/angular-editor';
     EventoListComponent,
     EventoFormComponent,
     SectionListComponent,
-    SectionFormComponent
+    SectionFormComponent,
+    ModalReenvioComponent,
+    LoginComponent,
+    AuthLayoutComponent
   ],
   imports: [
     CommonModule,

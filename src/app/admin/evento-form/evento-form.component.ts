@@ -43,6 +43,8 @@ export class EventoFormComponent implements OnInit {
   // Paginação
   paginaAtual: number = 1;
   itensPorPagina: number = 10;
+  inscricaoSelecionada: any = null;
+  isModalOpen = false;
   
   constructor(
     private fb: FormBuilder,
@@ -280,7 +282,6 @@ export class EventoFormComponent implements OnInit {
   loadEvento(id: string) {
     this.eventoService.getById(id).subscribe({
       next: (dados: any[]) => {
-        debugger
         const evento = Array.isArray(dados)
         ? dados.find(e => e.id == id)
         : dados;
@@ -414,6 +415,33 @@ export class EventoFormComponent implements OnInit {
       return 'Cancelado'
     return ''
   }
+  
+  
+  abrirModalReenvio(event: any, inscricao: any) {
+    event.preventDefault();    
+    this.inscricaoSelecionada = inscricao;
+    this.isModalOpen = true;
+  }
+  
+  fecharModal() {
+    this.isModalOpen = false;
+  }
+  
+  reenviarComprovante(event: any) {
+    if (!this.inscricaoSelecionada) return;
+    
+    // this.inscricaoService.reenviarComprovante(this.inscricaoSelecionada.id)
+    // .subscribe({
+    //   next: () => {
+    //     alert('Comprovante reenviado com sucesso!');
+    //     this.isModalOpen = false;
+    //   },
+    //   error: () => {
+    //     alert('Erro ao reenviar comprovante.');
+    //   }
+    // });
+  }
+  
   private slugify(text: string): string {
     return text
     .toString()
