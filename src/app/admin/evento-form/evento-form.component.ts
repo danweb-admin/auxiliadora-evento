@@ -314,7 +314,7 @@ export class EventoFormComponent implements OnInit {
           exibirProgramacao: evento.exibirProgramacao,
           exibirInformacoesAdicionais: evento.exibirInformacoesAdicionais,
           habilitarPix: evento.habilitarPix,
-          habilitarCartao: evento.habilitarCartaoCredito,
+          habilitarCartao: evento.habilitarCartao,
           qtdParcelas: evento.qtdParcelas,
 
         });

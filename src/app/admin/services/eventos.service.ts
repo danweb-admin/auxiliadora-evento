@@ -29,6 +29,13 @@ export class EventoService {
     }));
   }
 
+  getSlug(slug: string | null): Observable<any> {
+    return this.http.get(`${this.baseUrl}/eventos/get-slug/?slug=${slug}`)
+    .pipe(map((resp: any) => {
+      return resp;
+    }));
+  }
+
   getEventoById(id: string): Observable<any> {
     return this.http.get<any[]>(`${this.baseUrl}/eventos`).pipe(
       map(eventos => eventos.find(e => e.id === id))

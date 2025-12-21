@@ -1,4 +1,3 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { EventoService } from 'src/app/admin/services/eventos.service';
@@ -44,6 +43,9 @@ export class InscricaoDialogComponent implements OnInit{
   copiado = false;
   codigoInscricao: string = '';
   linkPgtoCartao: string = '';
+  habilitarPix: boolean = false;
+  habilitarCartao: boolean = false;
+  qtdParcelas: number = 1;
   
   constructor(private fb: FormBuilder,
     private service: EventoService,
@@ -73,6 +75,8 @@ export class InscricaoDialogComponent implements OnInit{
   ngOnInit(): void {
     this.carregarDecanato();
     this.carregarGrupoOracoes();
+    this.getEventoById();
+
     
     this.inscricaoForm.patchValue({ eventoId: this.eventoId });
     
@@ -114,8 +118,10 @@ export class InscricaoDialogComponent implements OnInit{
         this.valorInscricao = valor;
         this.inscricaoForm.patchValue({valorInscricao: valor});
       },
-      error: () => {
-        this.toastr.info('Lote da Inscrição não encontrada!');
+      error: (e) => {
+        
+        this.toastr.error('Evento não está ativo para receber Inscrições!');
+        this.bloquearConfirmar = true;
         this.valorInscricao = 0;
       }
     });
@@ -157,7 +163,7 @@ export class InscricaoDialogComponent implements OnInit{
     }
     // Aqui você envia a forma de pagamento para o backend
     this.service.inscricao(this.inscricaoForm.value).subscribe(resp => {
-      debugger
+      
       if (resp.tipoPagamento === 'pix'){
         this.toastr.success('A inscrição será efetivada após o pagamento!');
 
@@ -194,6 +200,14 @@ export class InscricaoDialogComponent implements OnInit{
   
   voltar(){
     
+  }
+
+  getEventoById(){
+    this.service.getById(this.eventoId).subscribe(resp => {
+      this.habilitarCartao = resp.habilitarCartao;
+      this.habilitarPix = resp.habilitarPix;
+      this.qtdParcelas = resp.qtdParcelas;
+    });
   }
   
   validarCpf(event: any) {

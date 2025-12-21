@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { EventoService } from 'src/app/admin/services/eventos.service';
 
 @Component({
   selector: 'app-evento-landing',
@@ -13,34 +13,28 @@ export class EventoLandingComponent implements OnInit {
   evento: any;
   showModal = false;
   
-  decanatos = [
-    { id: 1, nome: 'Decanato Norte' },
-    { id: 2, nome: 'Decanato Sul' }
-  ];
-  
   grupos: any[] = [];
   wazeUrl!: SafeResourceUrl;
   menuAberto = false;
-  baseUrl = 'https://backend.rcc-londrina.online/api/v1/eventos/get-all';
-  fotoUrl = 'https://res.cloudinary.com/dgcpvxvcj/image/upload/v1761264849/Fotos%20Eventos/marcao.jpg';
-
 
   constructor(
     private route: ActivatedRoute,
-    private http: HttpClient,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private service: EventoService,
     
   ) {
     
   }
   
   ngOnInit(): void {
-    const slug = this.route.snapshot.paramMap.get('slug');
-    
-    this.http.get<any[]>(this.baseUrl).subscribe(eventos => {
-      this.evento = eventos.find(e => e.slug === slug);
+    const slug= this.route.snapshot.paramMap.get('slug');
+
+    this.service.getSlug(slug).subscribe(ev => {
+      this.evento = ev;
       this.gerarMapaWaze();
-    }); 
+
+    });
+    
   }
   
   isMobile(): boolean {

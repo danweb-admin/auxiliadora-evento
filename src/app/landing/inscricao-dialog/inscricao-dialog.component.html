@@ -87,7 +87,7 @@
           </span>
         </p>
         
-        <div *ngIf="mostrarQRCode" class="pagamento-card" [class.selected]="formaSelecionada === 'pix'" (click)="formaPagamento('pix')">
+        <div *ngIf="mostrarQRCode && habilitarPix" class="pagamento-card" [class.selected]="formaSelecionada === 'pix'" (click)="formaPagamento('pix')">
           <h4>Pagamento via Pix</h4>
           <p>QR Code irá aparecer após a confirmação.</p>
           
@@ -105,7 +105,7 @@
           </div>
         </div>
         
-        <div class="pagamento-card" [class.selected]="formaSelecionada === 'cartao'" (click)="formaPagamento('cartao')">
+        <div *ngIf="habilitarCartao" class="pagamento-card" [class.selected]="formaSelecionada === 'cartao'" (click)="formaPagamento('cartao')">
           <h4>Pagamento com Cartão de Crédito</h4>
           <p>Pague com seu cartão de crédito.</p>
           
