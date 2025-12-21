@@ -1,19 +1,47 @@
-.sobre-conteudo, .informacoes-conteudo {
-  text-align: left !important; /* alinhamento padrão à esquerda */
+.sobre-conteudo,
+.informacoes-conteudo {
+  /* Alinhamento padrão */
+  text-align: left;
 
-  /* Permite que os estilos inline do editor (ex: text-align:center) funcionem */
-  *[style*="text-align"] {
-    text-align: inherit !important;
-  }
-
-  /* Melhora a legibilidade */
+  /* Legibilidade */
   line-height: 1.6;
   word-break: break-word;
+  overflow-wrap: anywhere;
 
-  /* Garante que imagens e ícones fiquem alinhados */
-  img, svg, i {
-    vertical-align: middle;
+  /* Espaçamento padrão entre elementos */
+  > * + * {
+    margin-top: 0.75rem;
+  }
+
+  /* Respeita alinhamento vindo do editor (inline style) */
+  *[style*="text-align"] {
+    text-align: inherit;
+  }
+
+  /* Imagens, ícones e mídias */
+  img,
+  svg,
+  i,
+  iframe,
+  video {
     max-width: 100%;
     height: auto;
+    vertical-align: middle;
+    display: inline-block;
+  }
+
+  /* Evita imagens estourando em mobile */
+  img {
+    border-radius: 0.5rem;
+  }
+
+  /* Listas */
+  ul,
+  ol {
+    padding-left: 1.5rem;
+  }
+
+  li {
+    margin-bottom: 0.25rem;
   }
 }

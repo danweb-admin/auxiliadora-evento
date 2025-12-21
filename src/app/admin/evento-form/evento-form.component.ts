@@ -72,6 +72,7 @@ export class EventoFormComponent implements OnInit {
       local: this.fb.group({
         id: [null],
         eventoId: [null],
+        nomeLocal: [''],
         latitude: [''],
         longitude: [''],
         endereco: [''],

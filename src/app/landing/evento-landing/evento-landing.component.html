@@ -26,22 +26,25 @@
     </nav>
     
     
-    <!-- Banner -->
-    <div class="relative text-center pt-32 px-4 bg-cover bg-center bg-no-repeat min-h-[70vh] flex flex-col justify-center items-center" [ngStyle]="{'background-image': 'url(' + evento.bannerImagem + ')'}">
-        <!-- Camada de sobreposição para legibilidade -->
-        <div class="absolute inset-0 bg-black/40"></div>
+    <div class="relative text-center pt-32 px-4 bg-no-repeat min-h-[75vh] flex flex-col justify-center items-center bg-cover bg-center md:bg-[position:top]" [ngStyle]="{'background-image': 'url(' + evento.bannerImagem + ')','background-color': '#9b8a92'}">
+        <!-- Overlay -->
+        <div class="absolute inset-0 bg-black/30"></div>
         
-        <!-- Conteúdo do banner -->
-        <div class="relative z-10 bg-white/50 p-8 rounded-2xl backdrop-blur-sm max-w-3xl mx-auto">
-            <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight">
+        <!-- Conteúdo -->
+        <div class="relative z-10 bg-white/60 p-8 rounded-2xl backdrop-blur-sm max-w-xl md:max-w-3xl mx-auto">
+            <h1 class="text-3xl md:text-6xl font-extrabold tracking-tight">
                 {{ evento.nome }}
             </h1>
-            <h2 class="text-2xl md:text-4xl font-semibold mt-4 text-pink-600">
+            
+            <h2 class="text-xl md:text-4xl font-semibold mt-4 text-pink-600">
                 {{ evento.organizadorNome }}
             </h2>
-            <p class="mt-6 text-lg text-gray-700">
-                De <b>{{ evento.dataInicio | date:'dd/MM/yyyy' }}</b> a <b>{{ evento.dataFim | date:'dd/MM/yyyy'}}</b>
+            
+            <p class="mt-6 text-base md:text-lg text-gray-700">
+                De <b>{{ evento.dataInicio | date:'dd/MM/yyyy' }}</b>
+                a <b>{{ evento.dataFim | date:'dd/MM/yyyy' }}</b>
             </p>
+            
             <button (click)="abrirModal()" class="mt-8 bg-pink-500 text-white px-8 py-3 rounded-full shadow-lg hover:bg-pink-600 transition">
                 INSCREVA-SE
             </button>
@@ -92,6 +95,7 @@
             
             <div *ngIf="evento.local">
                 <div class="text-center mb-8">
+                    <p class="text-lg font-medium">Nome do Local: {{ evento.local.nomeLocal }}</p>
                     <p class="text-lg font-medium">{{ evento.local.endereco }}</p>
                     <p class="text-gray-600">
                         {{ evento.local.cidade }} - {{ evento.local.estado }}
