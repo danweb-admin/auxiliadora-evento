@@ -422,6 +422,8 @@ export class EventoFormComponent implements OnInit {
       return 'Confirmado'
     if (pagamento == 'cancelado')
       return 'Cancelado'
+    if (pagamento == 'pagamento_expirado')
+      return 'Expirado'
     return ''
   }
   

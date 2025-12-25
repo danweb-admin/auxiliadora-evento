@@ -319,7 +319,8 @@
                             <td class="border p-2 whitespace-nowrap">
                                 <span [ngClass]="{
                                     'text-green-600 font-semibold': i.status === 'pagamento_confirmado',
-                                    'text-yellow-600 font-semibold': i.status === 'pendente'
+                                    'text-yellow-600 font-semibold': i.status === 'pendente',
+                                    'text-red-600 font-semibold': i.status === 'pagamento_expirado'
                                 }">{{ descreverPagameto(i.status) }}</span>
                             </td>
                             <td>
