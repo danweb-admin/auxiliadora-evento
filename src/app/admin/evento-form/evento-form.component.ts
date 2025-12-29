@@ -45,6 +45,13 @@ export class EventoFormComponent implements OnInit {
   itensPorPagina: number = 10;
   inscricaoSelecionada: any = null;
   isModalOpen = false;
+  filtroStatus = {
+    pendente: true,
+    confirmado: true,
+    expirado: true,
+    isento: true
+  };
+  
   
   constructor(
     private fb: FormBuilder,
@@ -129,21 +136,37 @@ export class EventoFormComponent implements OnInit {
   }
   
   aplicarFiltros() {
-    const termo = (this.searchTerm.value || '').toString().toLowerCase().trim();
+    const termo = (this.searchTerm.value || '')
+    .toString()
+    .toLowerCase()
+    .trim();
     
     this.inscricoesFiltradas = this.inscricoes.filter(i => {
-      return (
-        (i.codigoInscricao || '').toString().toLowerCase().includes(termo) ||
-        (i.nome || '').toString().toLowerCase().includes(termo) ||
-        (i.cpf || '').toString().includes(termo) ||
-        (i.telefone || '').toString().includes(termo) ||
-        (i.grupoOracao || '').toString().toLowerCase().includes(termo) ||
-        (i.decanato || '').toString().toLowerCase().includes(termo)
-      );
+      
+      /* 🔎 FILTRO DE TEXTO */
+      const matchTexto =
+      (i.codigoInscricao || '').toString().toLowerCase().includes(termo) ||
+      (i.nome || '').toString().toLowerCase().includes(termo) ||
+      (i.cpf || '').toString().includes(termo) ||
+      (i.telefone || '').toString().includes(termo) ||
+      (i.grupoOracao || '').toString().toLowerCase().includes(termo) ||
+      (i.decanato || '').toString().toLowerCase().includes(termo);
+      
+      if (!matchTexto) return false;
+      
+      /* ✅ FILTRO DE STATUS */
+      if (i.status === 'pendente' && this.filtroStatus.pendente) return true;
+      if (i.status === 'pagamento_confirmado' && this.filtroStatus.confirmado) return true;
+      if (i.status === 'pagamento_expirado' && this.filtroStatus.expirado) return true;
+      if (i.status === 'isento' && this.filtroStatus.isento) return true;
+
+      
+      return false;
     });
     
     this.paginaAtual = 1;
   }
+  
   
   
   get dadosPaginados() {
@@ -317,7 +340,7 @@ export class EventoFormComponent implements OnInit {
           habilitarPix: evento.habilitarPix,
           habilitarCartao: evento.habilitarCartao,
           qtdParcelas: evento.qtdParcelas,
-
+          
         });
         
         // this.getSobre().clear();
@@ -424,6 +447,8 @@ export class EventoFormComponent implements OnInit {
       return 'Cancelado'
     if (pagamento == 'pagamento_expirado')
       return 'Expirado'
+    if (pagamento == 'isento')
+      return 'Isento'
     return ''
   }
   
@@ -438,10 +463,10 @@ export class EventoFormComponent implements OnInit {
     this.isModalOpen = false;
   }
   
-  reenviarComprovante(event: any) {
+  reenviarComprovante(inscricao: any) {
     if (!this.inscricaoSelecionada) return;
     
-    // this.inscricaoService.reenviarComprovante(this.inscricaoSelecionada.id)
+    // this.eventoService.getReenvioComprovante(event.codigoInscricao, )
     // .subscribe({
     //   next: () => {
     //     alert('Comprovante reenviado com sucesso!');
@@ -451,6 +476,28 @@ export class EventoFormComponent implements OnInit {
     //     alert('Erro ao reenviar comprovante.');
     //   }
     // });
+  }
+  
+  isentarInscricao(event: any, inscricao: any) {
+    event.preventDefault();
+
+    if (!confirm(`Deseja isentar a inscrição ${inscricao.codigoInscricao}?`)) {
+      return;
+    }
+    
+    // Aqui você chama o backend
+    console.log('Isentando inscrição:', inscricao.codigoInscricao);
+    
+    // Exemplo:
+     this.eventoService.getIsentarInscricao(inscricao.codigoInscricao)
+     .subscribe({
+      next: () => {
+        this.toastr.info('Inscrição foi isentada com sucesso!');
+      },
+      error: () => {
+        alert('Erro ao isentar inscrição.');
+      }
+    });
   }
   
   private slugify(text: string): string {

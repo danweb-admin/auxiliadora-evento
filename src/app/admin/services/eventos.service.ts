@@ -22,6 +22,13 @@ export class EventoService {
     }));
   }
 
+  getIsentarInscricao(codigoInscricao: string): Observable<any> {
+    return this.http.get(`${this.baseUrl}/eventos/isentar-inscricao/?codigoInscricao=${codigoInscricao}`)
+    .pipe(map((resp: any) => {
+      return resp;
+    }));
+  }
+
   getById(id: string): Observable<any> {
     return this.http.get(`${this.baseUrl}/eventos/${id}`)
     .pipe(map((resp: any) => {
