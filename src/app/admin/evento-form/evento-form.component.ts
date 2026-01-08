@@ -135,6 +135,10 @@ export class EventoFormComponent implements OnInit {
     return Math.ceil(this.inscricoesFiltradas.length / this.itensPorPagina);
   }
   
+  get totalFiltrado(): number {
+    return this.inscricoesFiltradas.length;
+  }
+  
   aplicarFiltros() {
     const termo = (this.searchTerm.value || '')
     .toString()
@@ -159,7 +163,7 @@ export class EventoFormComponent implements OnInit {
       if (i.status === 'pagamento_confirmado' && this.filtroStatus.confirmado) return true;
       if (i.status === 'pagamento_expirado' && this.filtroStatus.expirado) return true;
       if (i.status === 'isento' && this.filtroStatus.isento) return true;
-
+      
       
       return false;
     });
@@ -480,7 +484,7 @@ export class EventoFormComponent implements OnInit {
   
   isentarInscricao(event: any, inscricao: any) {
     event.preventDefault();
-
+    
     if (!confirm(`Deseja isentar a inscrição ${inscricao.codigoInscricao}?`)) {
       return;
     }
@@ -489,8 +493,8 @@ export class EventoFormComponent implements OnInit {
     console.log('Isentando inscrição:', inscricao.codigoInscricao);
     
     // Exemplo:
-     this.eventoService.getIsentarInscricao(inscricao.codigoInscricao)
-     .subscribe({
+    this.eventoService.getIsentarInscricao(inscricao.codigoInscricao)
+    .subscribe({
       next: () => {
         this.toastr.info('Inscrição foi isentada com sucesso!');
       },

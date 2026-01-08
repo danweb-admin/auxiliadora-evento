@@ -165,7 +165,7 @@ export class InscricaoDialogComponent implements OnInit{
     this.service.inscricao(this.inscricaoForm.value).subscribe(resp => {
       
       if (resp.tipoPagamento === 'pix'){
-        this.toastr.success('A inscrição será efetivada após o pagamento!');
+        this.toastr.success('A inscrição será efetivada após o pagamento, verifique seu email!');
 
         this.qrCode = true;
         this.qrCodeLink = `data:image/png;base64,${resp.linkQrCodeBase64}`;

@@ -308,7 +308,7 @@
                         (change)="aplicarFiltros()">
                         Expirado
                     </label>
-
+                    
                     <label class="flex items-center gap-1 cursor-pointer text-blue-600 text-sm font-medium">
                         <input type="checkbox"
                         [(ngModel)]="filtroStatus.isento"
@@ -318,6 +318,9 @@
                     </label>
                 </div>
                 <div>
+                    <span class="text-sm text-gray-500">
+                        ({{ totalFiltrado }} registros)
+                    </span>
                     <span class="text-sm text-gray-500">
                         Página {{ paginaAtual }} de {{ totalPaginas }}
                     </span>
