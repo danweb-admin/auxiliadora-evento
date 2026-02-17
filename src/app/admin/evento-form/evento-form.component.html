@@ -56,6 +56,11 @@
                 [class.border-b-2]="abaAtiva === 'formasPagamento'"
                 (click)="abaAtiva = 'formasPagamento'">Formas de Pagamento</a>
             </li>
+            <li class="mr-4">
+                <a class="cursor-pointer py-2 px-4 block"
+                [class.border-b-2]="abaAtiva === 'camposFormulario'"
+                (click)="abaAtiva = 'campos'">Campos Formulários</a>
+            </li>
         </ul>
         
         <!-- Aba Dados do Evento -->
@@ -326,7 +331,7 @@
                     </span>
                 </div>
                 <button
-                (click)="downloadCsv()"
+                (click)="downloadCsv($event)"
                 class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 text-sm"
                 >
                 📥 Exportar CSV
@@ -444,13 +449,78 @@
     </div>
     
     
-    
-    
-    <!-- Botões -->
-    <div class="flex justify-end space-x-4 mt-6">
-        <button type="button" class="px-6 py-2 bg-gray-400 text-white rounded" (click)="cancelar()">Cancelar</button>
-        <button type="submit" class="px-6 py-2 bg-pink-600 text-white rounded">Salvar</button>
+    <div *ngIf="abaAtiva === 'campos'" formArrayName="eventoCampos">
+        
+        <div *ngFor="let c of eventoCampos.controls; let i = index" [formGroupName]="i" class="border p-4 rounded mb-4">
+            
+            <input type="hidden" formControlName="id" />
+            <input type="hidden" formControlName="eventoId" />
+            
+            <!-- GRID 2 COLUNAS -->
+            <div class="grid grid-cols-4 gap-4">
+                
+                <!-- Label -->
+                <div>
+                    <label class="block font-medium">Nome Campo</label>
+                    <input formControlName="label" class="border p-2 w-full rounded" />
+                </div>
+                
+                <!-- Tipo -->
+                <div>
+                    <label class="block font-medium">Tipo</label>
+                    <select formControlName="tipo" class="border p-2 w-full rounded">
+                        <option value="text">Texto</option>
+                        <option value="number">Número</option>
+                        <option value="date">Data</option>
+                        <option value="select">Select</option>
+                        <option value="checkbox">Checkbox</option>
+                    </select>
+                </div>
+                
+                <!-- Ordem -->
+                <div>
+                    <label class="block font-medium">Ordem</label>
+                    <input formControlName="ordem" class="border p-2 w-full rounded" />
+                </div>
+
+                <!-- Obrigatório -->
+                <div class="flex items-center gap-2 mt-6">
+                    <input type="checkbox" formControlName="obrigatorio">
+                    <label>Obrigatório</label>
+                </div>
+                
+                <!-- Opções ocupa linha inteira -->
+                <div *ngIf="c.get('tipo')?.value === 'select'" class="col-span-2">
+                    
+                    <label class="block font-medium">
+                        Opções (uma por linha)
+                    </label>
+                    
+                    <textarea formControlName="opcoes" class="border p-2 w-full rounded" rows="5"> </textarea>
+                </div>
+                
+            </div>
+            
+            <!-- Botão remover -->
+            <button type="button" class="mt-4 bg-red-500 text-white px-4 py-1 rounded" (click)="removeCampo(i)"> Remover </button>
+        
     </div>
+    
+    <button type="button" class="bg-green-600 text-white px-4 py-2 rounded" (click)="addCampo()"> + Adicionar Campo</button>
+
+</div>
+
+
+
+
+
+
+
+<!-- Botões -->
+<div class="flex justify-end space-x-4 mt-6">
+    <button type="button" class="px-6 py-2 bg-gray-400 text-white rounded" (click)="cancelar()">Cancelar</button>
+    <button type="submit" class="px-6 py-2 bg-pink-600 text-white rounded">Salvar</button>
+</div>
 </form>
 </div>
 

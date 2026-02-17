@@ -11,7 +11,7 @@ export class HomeComponent implements OnInit {
   eventos: any[] = [];
   menuAberto = false;
   baseUrl = 'https://backend.rcc-londrina.online/api/v1/eventos/get-all-home';
-  // baseUrl = 'http://localhost:5290/api/v1/eventos/get-all-home';
+  // baseUrl = 'http://192.168.15.5:5100/api/v1/eventos/get-all-home';
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -22,7 +22,7 @@ export class HomeComponent implements OnInit {
   }
 
   abrirEvento(slug: string) {
-    // Navega até a landing page do evento
+    // Navega até a landing page do evento   
     this.router.navigate(['/eventos', slug]);
   }
 }

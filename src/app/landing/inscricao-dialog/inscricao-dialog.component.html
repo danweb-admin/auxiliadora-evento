@@ -62,6 +62,32 @@
           </label>
         </div>
         
+        <div *ngFor="let campo of camposDinamicos">
+          
+          <label class="block text-sm font-medium text-gray-700 mb-1">{{campo.label}}</label>
+          
+          <!-- TEXT -->
+          <input *ngIf="campo.tipo === 'text'" [formControlName]="campo.nomeCampo" type="text" class="form-control" [placeholder]="campo.label">
+          
+          <!-- NUMBER -->
+          <input *ngIf="campo.tipo === 'number'" [formControlName]="campo.nomeCampo" type="number" class="form-control">
+          
+          <!-- SELECT -->
+          <select *ngIf="campo.tipo === 'select'" [formControlName]="campo.nomeCampo" class="form-control">
+            <option *ngFor="let opcao of campo.opcoes" [value]="opcao">
+              {{ opcao }}
+            </option>
+          </select>
+          
+          <!-- CHECKBOX -->
+          <div *ngIf="campo.tipo === 'checkbox'">
+            <input type="checkbox" [formControlName]="campo.nomeCampo">
+            {{ campo.label }}
+          </div>
+          
+        </div>
+        
+        
         <!-- Botão Próximo -->
         <button type="button" [disabled]="!inscricaoForm.valid" (click)="proximo()" class="w-full bg-pink-500 text-white px-4 py-2 rounded mt-3 text-sm font-medium hover:bg-pink-600 disabled:opacity-50">Próximo: Forma de Pagamento →</button>
       </div>
@@ -106,12 +132,12 @@
           </p>
         </div>
         
-        <!-- CONTEÚDO NORMAL (DINHEIRO) -->
+        <!-- CONTEÚDO NORMAL (DINHEIRO) --> 
         <ng-container *ngIf="statusPagamento !== 'PAGO'">
           <div *ngIf="habilitarDinheiro" class="pagamento-card" [class.selected]="formaSelecionada === 'dinheiro'" (click)="formaPagamento('dinheiro')">
-              
+            
             <h4 class="font-bold mb-2">Pagamento em Dinheiro</h4>
-
+            
             <div *ngIf="pagoDinheiro" class="text-center">
               
               <h3>✅ Inscrição realizada</h3>

@@ -5,7 +5,7 @@ import { map, Observable } from "rxjs";
 @Injectable({ providedIn: 'root' })
 export class EventoService {
   private baseUrl = 'https://backend.rcc-londrina.online/api/v1';
-  // private baseUrl = 'http://localhost:5290/api/v1';
+  // private baseUrl = 'http://192.168.15.5:5100/api/v1';
 
 
   constructor(private http: HttpClient) {}
@@ -78,12 +78,16 @@ export class EventoService {
     return this.http.get<any[]>(`${this.baseUrl}/grupo-oracao/get-all`);
   }
 
+  getCarregaCampos(eventoId: string): Observable<any[]> {
+    return this.http.get<any>(`${this.baseUrl}/eventos/${eventoId}/campos`);
+  }
+
   getServoByCPF(cpf: string): Observable<any> {
     return this.http.get<any>(`${this.baseUrl}/servos/by-cpf?cpf=${cpf}`);
   }
 
   getLoteInscricao(eventoId: string): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/eventos/lote-inscricao?eventoId=${eventoId}`);
+    return this.http.get<any[]>(`${this.baseUrl}/eventos/lote-inscricao?eventoId=${eventoId}`);
   }
 
   createUsuarioCheckin(payload: any): Observable<any>{

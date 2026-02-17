@@ -104,7 +104,9 @@ export class EventoFormComponent implements OnInit {
       exibirPregadores: [true],
       exibirProgramacao: [true],
       exibirInformacoesAdicionais: [true],
-      lotesInscricoes: this.fb.array([])
+      lotesInscricoes: this.fb.array([]),
+      eventoCampos: this.fb.array([])
+      
     });
     
     // Slug automático
@@ -172,7 +174,33 @@ export class EventoFormComponent implements OnInit {
     this.paginaAtual = 1;
   }
   
-  downloadCsv() {
+  addCampo(item: any = { id: null, eventoId: this.eventoId, label: '', tipo: 'text', obrigatorio: false, opcoes: '', ordem: 0} ) {
+    console.log(item)
+    this.eventoCampos.push(
+      this.fb.group({
+        id: [null],
+        eventoId: [this.eventoId],
+        label: [ item.label],
+        tipo: [item.tipo],
+        nomeCampo: [''],
+        obrigatorio: [item.obrigatorio],
+        opcoes: [Array.isArray(item.opcoes) ? item.opcoes.join('\n') : ''],
+        ordem: [item.ordem]
+      })
+    );
+  }
+  
+  removeCampo(index: number) {
+    this.eventoCampos.removeAt(index);
+  }
+  
+  get eventoCampos(): FormArray {
+    return this.eventoForm.get('eventoCampos') as FormArray;
+  }
+  
+  downloadCsv(e: any) {
+    e.preventDefault()
+    
     if (!this.inscricoesFiltradas || this.inscricoesFiltradas.length === 0) {
       return;
     }
@@ -188,6 +216,8 @@ export class EventoFormComponent implements OnInit {
       'Status'
     ];
     
+    
+    
     const rows = this.inscricoesFiltradas.map(i => [
       i.codigoInscricao,
       i.nome,
@@ -195,7 +225,7 @@ export class EventoFormComponent implements OnInit {
       i.telefone,
       i.grupoOracao,
       i.decanato,
-      i.pagamento,
+      i.tipoPagamento,
       i.status
     ]);
     
@@ -358,6 +388,10 @@ export class EventoFormComponent implements OnInit {
   getInformacoesAdicionais(): FormArray { 
     return this.eventoForm.get('informacoesAdicionais') as FormArray; 
   }
+
+  getEventoCampos(): FormArray { 
+    return this.eventoForm.get('eventoCampos') as FormArray; 
+  }
   
   loadEvento(id: string) {
     this.eventoService.getById(id).subscribe({
@@ -365,12 +399,12 @@ export class EventoFormComponent implements OnInit {
         const evento = Array.isArray(dados)
         ? dados.find(e => e.id == id)
         : dados;
+
         
         if (!evento) {
           console.error('Evento não encontrado!');
           return;
         }
-        console.log(evento)
         
         this.eventoForm.patchValue({
           id: evento.id,
@@ -396,18 +430,18 @@ export class EventoFormComponent implements OnInit {
           qtdParcelas: evento.qtdParcelas, 
           
         });
-        
+
         // this.getSobre().clear();
         this.getPregadores().clear();
         this.getProgramacao().clear();
-        // this.getInformacoesAdicionais().clear();
+        this.getEventoCampos().clear();
         this.lotesInscricoes.clear();
         
         this.inscricoes = evento.inscricoes || [];
         // inicializa filtrados
         this.inscricoesFiltradas = [...this.inscricoes];
         
-        // (evento.sobre || []).forEach((p: any) => this.addSobre(p));
+        (evento.eventoCampos || []).forEach((p: any) => this.addCampo(p));
         (evento.participacoes || []).forEach((p: any) => this.addPregador(p));
         (evento.programacao || []).forEach((p: any) => this.addProgramacao(p));
         (evento.lotesInscricoes || []).forEach((p: any) => this.addLote(p));
@@ -423,6 +457,13 @@ export class EventoFormComponent implements OnInit {
     
     if (this.eventoForm.valid) {
       const evento = this.eventoForm.value;
+      
+      evento.eventoCampos = evento.eventoCampos.map((c: { opcoes: string; }) => ({
+        ...c,
+        opcoes: c.opcoes
+        ? c.opcoes.split('\n').map(o => o.trim()).filter(o => o)
+        : []
+      }));
       
       if (evento.id === "" || evento.id === null ){
         this.eventoService.save(evento).subscribe((resp: any) => {

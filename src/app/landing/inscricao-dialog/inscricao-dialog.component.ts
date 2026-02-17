@@ -1,5 +1,5 @@
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { EventoService } from 'src/app/admin/services/eventos.service';
 import { ValidateService } from '../services/validate.service';
 import { ToastrService } from 'ngx-toastr';
@@ -47,11 +47,12 @@ export class InscricaoDialogComponent implements OnInit{
   habilitarPix: boolean = false;
   habilitarCartao: boolean = false;
   habilitarDinheiro: boolean = false;
-
+  
   qtdParcelas: number = 1;
   // Tempo total do Pix (em segundos)
   tempoTotalPix = 15 * 60; // 15 minutos
   tempoRestante = this.tempoTotalPix;
+  camposDinamicos: any[] = [];
   
   pixExpirado = false;
   private timerPix: any;
@@ -86,6 +87,7 @@ export class InscricaoDialogComponent implements OnInit{
   ngOnInit(): void {
     this.carregarDecanato();
     this.carregarGrupoOracoes();
+    this.carregarCampos();
     this.getEventoById();
     
     
@@ -133,228 +135,256 @@ export class InscricaoDialogComponent implements OnInit{
       this.service.verificarStatus(this.codigoInscricao)
       .subscribe(
         response => {
-        if (response.status === 'PAGO') {
-          clearInterval(this.pollingPix);
-          clearInterval(this.timerPix);
+          if (response.status === 'PAGO') {
+            clearInterval(this.pollingPix);
+            clearInterval(this.timerPix);
+            
+            this.statusPagamento = 'PAGO';
+          }
+        },
+        (error: any) =>{
+          console.log(error);
           
+        });
+      }, 5000); // a cada 5 segundos
+    }
+    
+    
+    buscaLoteInscricao(){
+      this.service.getLoteInscricao(this.eventoId).subscribe({
+        next: (valor) => {
+          
+          this.valorInscricao = valor;
+          this.inscricaoForm.patchValue({valorInscricao: valor});
+        },
+        error: (e) => {
+          
+          this.toastr.error('Evento não está ativo para receber Inscrições!');
+          this.bloquearConfirmar = true;
+          this.valorInscricao = 0;
+        }
+      });
+    }
+    
+    proximo() {
+      if (this.inscricaoForm.invalid) {
+        this.inscricaoForm.markAllAsTouched();
+        return;
+      }
+      
+      this.selectedTab = 'pagamento'
+      
+      // lógica para ir à próxima aba (Forma de Pagamento)
+    }
+    
+    
+    fechar() {
+      this.closed.emit();
+    }
+    
+    salvar() {
+      if (this.inscricaoForm.valid) {
+        console.log('Dados inscrição:', this.inscricaoForm.value);
+        this.selectedTab = 'pagamento';
+      }
+    }
+    
+    formaPagamento(forma: any){
+      this.formaSelecionada = forma;
+      this.inscricaoForm.patchValue({tipoPagamento: forma})
+    }
+    
+    confirmar() {
+      
+      if (!this.formaSelecionada){
+        this.toastr.warning('Selecione uma forma de pagamento! Pix ou Cartão')
+        return;
+      }
+      
+      
+      const payload = {
+        ...this.inscricaoForm.value,
+        camposDinamicos: this.camposDinamicos.map(c => ({
+          eventoCampoId: c.id,
+          valor: this.inscricaoForm.value[c.nomeCampo]
+        }))
+      };
+
+      // Aqui você envia a forma de pagamento para o backend
+      this.service.inscricao(payload).subscribe(resp => {
+        
+        if (resp.tipoPagamento === 'pix'){
+          this.toastr.success('A inscrição será efetivada após o pagamento, verifique seu email!');
+          
+          this.qrCode = true;
+          this.qrCodeLink = `data:image/png;base64,${resp.linkQrCodeBase64}`;
+          this.pixCopiaECola = resp.qrCodeCopiaCola;
+          this.mostrarCartao = false;
+          this.iniciarTimerPix();
+          this.iniciarVerificacaoPagamento();
+        }
+        
+        if (resp.tipoPagamento === 'cartao'){
+          this.toastr.success('Link para pagamento com cartão de crédito foi gerado com sucesso.!');
+          this.mostrarQRCode = false
+          this.linkPgtoCartao = resp.linkPgtoCartao;
+        }
+        
+        if (resp.tipoPagamento === 'dinheiro'){
+          this.toastr.success('Inscrição realizada com sucesso.!');
+          this.pagoDinheiro = true;
           this.statusPagamento = 'PAGO';
         }
-      },
-        (error: any) =>{
-            console.log(error);
-            
-        });
-    }, 5000); // a cada 5 segundos
-  }
-  
-  
-  buscaLoteInscricao(){
-    this.service.getLoteInscricao(this.eventoId).subscribe({
-      next: (valor) => {
         
-        this.valorInscricao = valor;
-        this.inscricaoForm.patchValue({valorInscricao: valor});
-      },
-      error: (e) => {
-        
-        this.toastr.error('Evento não está ativo para receber Inscrições!');
+        this.codigoInscricao = resp.codigoInscricao;
         this.bloquearConfirmar = true;
-        this.valorInscricao = 0;
-      }
-    });
-  }
-  
-  proximo() {
-    if (this.inscricaoForm.invalid) {
-      this.inscricaoForm.markAllAsTouched();
-      return;
-    }
-    
-    this.selectedTab = 'pagamento'
-    
-    // lógica para ir à próxima aba (Forma de Pagamento)
-  }
-  
-  
-  fechar() {
-    this.closed.emit();
-  }
-  
-  salvar() {
-    if (this.inscricaoForm.valid) {
-      console.log('Dados inscrição:', this.inscricaoForm.value);
-      this.selectedTab = 'pagamento';
-    }
-  }
-  
-  formaPagamento(forma: any){
-    this.formaSelecionada = forma;
-    this.inscricaoForm.patchValue({tipoPagamento: forma})
-  }
-  
-  confirmar() {
-    
-    if (!this.formaSelecionada){
-      this.toastr.warning('Selecione uma forma de pagamento! Pix ou Cartão')
-      return;
-    }
-    // Aqui você envia a forma de pagamento para o backend
-    this.service.inscricao(this.inscricaoForm.value).subscribe(resp => {
-      
-      if (resp.tipoPagamento === 'pix'){
-        this.toastr.success('A inscrição será efetivada após o pagamento, verifique seu email!');
-        
-        this.qrCode = true;
-        this.qrCodeLink = `data:image/png;base64,${resp.linkQrCodeBase64}`;
-        this.pixCopiaECola = resp.qrCodeCopiaCola;
-        this.mostrarCartao = false;
-        this.iniciarTimerPix();
-        this.iniciarVerificacaoPagamento();
-      }
-      
-      if (resp.tipoPagamento === 'cartao'){
-        this.toastr.success('Link para pagamento com cartão de crédito foi gerado com sucesso.!');
-        this.mostrarQRCode = false
-        this.linkPgtoCartao = resp.linkPgtoCartao;
-      }
-
-      if (resp.tipoPagamento === 'dinheiro'){
-        this.toastr.success('Inscrição realizada com sucesso.!');
-        this.pagoDinheiro = true;
-        this.statusPagamento = 'PAGO';
-      }
-      
-      this.codigoInscricao = resp.codigoInscricao;
-      this.bloquearConfirmar = true;
-    },(error: any) =>{
-      this.toastr.warning(error.error.message)
-    });
-    
-  }
-  
-  iniciarTimerPix() {
-    // Evita múltiplos timers
-    if (this.timerPix) {
-      clearInterval(this.timerPix);
-    }
-    
-    this.pixExpirado = false;
-    this.tempoRestante = this.tempoTotalPix;
-    
-    this.timerPix = setInterval(() => {
-      this.tempoRestante--;
-      
-      if (this.tempoRestante <= 0) {
-        clearInterval(this.timerPix);
-        this.pixExpirado = true;
-      }
-    }, 1000);
-  }
-  
-  
-  copiarCodigoPix(event: any) {
-    event.preventDefault();
-    navigator.clipboard.writeText(this.pixCopiaECola)
-    .then(() => {
-      this.toastr.info('Código PIX copiado!')
-    })
-    .catch(err => {
-      console.error('Erro ao copiar PIX: ', err);
-    });
-  }
-  
-  voltar(){
-    
-  }
-  
-  getEventoById(){
-    this.service.getById(this.eventoId).subscribe(resp => {
-      this.habilitarCartao = resp.habilitarCartao;
-      this.habilitarPix = resp.habilitarPix;
-      this.habilitarDinheiro = resp.habilitarDinheiro;
-      this.qtdParcelas = resp.qtdParcelas;
-    });
-  }
-  
-  validarCpf(event: any) {
-    let cpf = event.target.value;
-    
-    if (!this.validateService.validarCpf(cpf)){
-      this.toastr.warning("CPF Inválido.")
-      
-      setTimeout(() => {
-        this.cpfInput.nativeElement.focus();
-      }, 0);
-      
-      return;
-    }
-    
-    this.service.getServoByCPF(cpf).subscribe(resp => {
-      
-      this.inscricaoForm.patchValue({
-        servoId: resp.id,
-        cpf: cpf,
-        nome: resp.name,
-        email: resp.email.toLowerCase(),
-        telefone: resp.cellPhone,
-        decanatoId: resp.grupoOracao?.paroquiaCapela?.decanatoId,
-        grupoOracaoId: resp.grupoOracao?.id
+      },(error: any) =>{
+        this.toastr.warning(error.error.message)
       });
       
-      this.inscricaoForm.get('semGrupo')?.disable();
-      
-      this.modoVisualizacao = true;
-      
-    },(error: any) =>{
-      if (error.status === 404) {
-        // Usuário não encontrado — habilita todos os campos
-        this.inscricaoForm.get('nome')?.enable();
-        this.inscricaoForm.get('telefone')?.enable();
-        this.inscricaoForm.get('decanatoId')?.enable();
-        this.inscricaoForm.get('grupoOracaoId')?.enable();
-        this.inscricaoForm.get('email')?.enable();
-        
-        this.toastr.info('Cadastro não encontrado, preencha seus dados.');
-      } else {
-        this.toastr.error('Erro ao buscar CPF.');
+    }
+    
+    iniciarTimerPix() {
+      // Evita múltiplos timers
+      if (this.timerPix) {
+        clearInterval(this.timerPix);
       }
       
-    });
-  }
-  
-  irParaPagamento(event: any){
-    event.preventDefault();
-    if (this.linkPgtoCartao) {
-      window.open(this.linkPgtoCartao, '_blank');
+      this.pixExpirado = false;
+      this.tempoRestante = this.tempoTotalPix;
+      
+      this.timerPix = setInterval(() => {
+        this.tempoRestante--;
+        
+        if (this.tempoRestante <= 0) {
+          clearInterval(this.timerPix);
+          this.pixExpirado = true;
+        }
+      }, 1000);
+    }
+    
+    
+    copiarCodigoPix(event: any) {
+      event.preventDefault();
+      navigator.clipboard.writeText(this.pixCopiaECola)
+      .then(() => {
+        this.toastr.info('Código PIX copiado!')
+      })
+      .catch(err => {
+        console.error('Erro ao copiar PIX: ', err);
+      });
+    }
+    
+    voltar(){
+      
+    }
+    
+    getEventoById(){
+      this.service.getById(this.eventoId).subscribe(resp => {
+        this.habilitarCartao = resp.habilitarCartao;
+        this.habilitarPix = resp.habilitarPix;
+        this.habilitarDinheiro = resp.habilitarDinheiro;
+        this.qtdParcelas = resp.qtdParcelas;
+      });
+    }
+    
+    validarCpf(event: any) {
+      let cpf = event.target.value;
+      
+      if (!this.validateService.validarCpf(cpf)){
+        this.toastr.warning("CPF Inválido.")
+        
+        setTimeout(() => {
+          this.cpfInput.nativeElement.focus();
+        }, 0);
+        
+        return;
+      }
+      
+      this.service.getServoByCPF(cpf).subscribe(resp => {
+        
+        this.inscricaoForm.patchValue({
+          servoId: resp.id,
+          cpf: cpf,
+          nome: resp.name,
+          email: resp.email.toLowerCase(),
+          telefone: resp.cellPhone,
+          decanatoId: resp.grupoOracao?.paroquiaCapela?.decanatoId,
+          grupoOracaoId: resp.grupoOracao?.id
+        });
+        
+        this.inscricaoForm.get('semGrupo')?.disable();
+        
+        this.modoVisualizacao = true;
+        
+      },(error: any) =>{
+        if (error.status === 404) {
+          // Usuário não encontrado — habilita todos os campos
+          this.inscricaoForm.get('nome')?.enable();
+          this.inscricaoForm.get('telefone')?.enable();
+          this.inscricaoForm.get('decanatoId')?.enable();
+          this.inscricaoForm.get('grupoOracaoId')?.enable();
+          this.inscricaoForm.get('email')?.enable();
+          
+          this.toastr.info('Cadastro não encontrado, preencha seus dados.');
+        } else {
+          this.toastr.error('Erro ao buscar CPF.');
+        }
+        
+      });
+    }
+    
+    irParaPagamento(event: any){
+      event.preventDefault();
+      if (this.linkPgtoCartao) {
+        window.open(this.linkPgtoCartao, '_blank');
+      }
+    }
+    
+    selecionarForma(forma: 'pix' | 'cartao') {
+      this.formaSelecionada = forma;
+    }
+    
+    getDescricaoForma(forma: string): string {
+      return forma === 'pix'
+      ? 'Pagamento via Pix (QR Code instantâneo)'
+      : 'Pagamento com Cartão de Crédito';
+    }
+    
+    carregarDecanato(){
+      this.service.getDecanatos().subscribe(resp => {
+        this.decanatos = resp;
+      })
+    }
+    
+    carregarGrupoOracoes() {
+      this.service.getGrupoOracoes().subscribe(resp => {
+        this.grupos = resp;
+      })
+    }
+    
+    carregarCampos() {
+      this.service.getCarregaCampos(this.eventoId)
+      .subscribe(campos => {
+        this.camposDinamicos = campos;
+        
+        campos.forEach(campo => {
+          this.inscricaoForm.addControl(
+            campo.nomeCampo,
+            new FormControl(
+              '',
+              campo.obrigatorio ? Validators.required : null
+            )
+          );
+        });
+      });
+    }
+    
+    
+    filtrarGruposPorDecanato(decanatoId: string): any[] {
+      return this.grupos.filter(g =>
+        g.paroquiaCapela?.decanatoSetor?.id === decanatoId
+      );
     }
   }
   
-  selecionarForma(forma: 'pix' | 'cartao') {
-    this.formaSelecionada = forma;
-  }
-  
-  getDescricaoForma(forma: string): string {
-    return forma === 'pix'
-    ? 'Pagamento via Pix (QR Code instantâneo)'
-    : 'Pagamento com Cartão de Crédito';
-  }
-  
-  carregarDecanato(){
-    this.service.getDecanatos().subscribe(resp => {
-      this.decanatos = resp;
-    })
-  }
-  
-  carregarGrupoOracoes() {
-    this.service.getGrupoOracoes().subscribe(resp => {
-      this.grupos = resp;
-    })
-  }
-  
-  
-  filtrarGruposPorDecanato(decanatoId: string): any[] {
-    return this.grupos.filter(g =>
-      g.paroquiaCapela?.decanatoSetor?.id === decanatoId
-    );
-  }
-}
