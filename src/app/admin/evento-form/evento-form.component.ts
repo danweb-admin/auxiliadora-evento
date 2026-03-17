@@ -471,6 +471,7 @@ export class EventoFormComponent implements OnInit {
           this.router.navigate(['/admin/eventos']);
         },
         (error: any) =>{
+          
           console.log(error);
           this.toastr.warning(error.error?.message)
           this.router.navigate(['/admin/eventos']);

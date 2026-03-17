@@ -12,6 +12,8 @@ export class HomeComponent implements OnInit {
   menuAberto = false;
   baseUrl = 'https://backend.rcc-londrina.online/api/v1/eventos/get-all-home';
   // baseUrl = 'http://192.168.15.5:5100/api/v1/eventos/get-all-home';
+  // private baseUrl = 'http://localhost:5290/api/v1/eventos/get-all-home';
+
 
   constructor(private http: HttpClient, private router: Router) {}
 

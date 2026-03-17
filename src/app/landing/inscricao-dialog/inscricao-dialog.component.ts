@@ -39,6 +39,8 @@ export class InscricaoDialogComponent implements OnInit{
   mostrarQRCode =  true;
   bloquearConfirmar = false;
   qrCodeLink: string  = ''
+  qrCodePNG: string  = ''
+
   pixCopiaECola: string = '';
   copiado = false;
   codigoInscricao: string = '';
@@ -218,6 +220,7 @@ export class InscricaoDialogComponent implements OnInit{
           
           this.qrCode = true;
           this.qrCodeLink = `data:image/png;base64,${resp.linkQrCodeBase64}`;
+          this.qrCodePNG = resp.linkQrCodePNG;
           this.pixCopiaECola = resp.qrCodeCopiaCola;
           this.mostrarCartao = false;
           this.iniciarTimerPix();

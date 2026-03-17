@@ -95,9 +95,6 @@
       <!-- PAGAMENTO -->
       <div *ngIf="selectedTab === 'pagamento'" class="space-y-3">
         
-        
-        
-        
         <h3 class="text-lg font-bold mb-3">Escolha a forma de pagamento</h3>
         
         <h3 class="text-lg font-bold mb-3">Após efetuar o pagamento confira sua Caixa de Email/Lixeira</h3>
@@ -185,7 +182,7 @@
             <!-- QR CODE -->
             <img *ngIf="qrCode && !pixExpirado"
             class="qrcode-png mx-auto my-3"
-            [src]="qrCodeLink">
+            [src]="qrCodeLink" (error)="qrCodeLink = qrCodePNG">
             
             <!-- PIX COPIA E COLA -->
             <div *ngIf="qrCode && !pixExpirado" class="pix-box">

@@ -76,7 +76,6 @@ export class UsuariosListComponent implements OnInit {
       this.fecharModal();
       this.carregarUsuarios();
     },(error: any) =>{
-        debugger
       this.toastr.warning(error.error.message)
     });
   }

@@ -6,7 +6,7 @@ import { map, Observable } from "rxjs";
 export class EventoService {
   private baseUrl = 'https://backend.rcc-londrina.online/api/v1';
   // private baseUrl = 'http://192.168.15.5:5100/api/v1';
-
+    // private baseUrl = 'http://localhost:5290/api/v1';
 
   constructor(private http: HttpClient) {}
 

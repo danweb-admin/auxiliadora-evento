@@ -17,9 +17,13 @@ export class Interceptor implements HttpInterceptor {
     private router: Router) {}
     
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-      this.loadingService.show();
+      const ignorarLoading = req.url.includes('/eventos/verifica-status');
+      
+      if (!ignorarLoading) {
+        this.loadingService.show();
+      }
+
       const token = localStorage.getItem('token');
-      console.log(req)
       
       if (token) {
         const cloned = req.clone({
