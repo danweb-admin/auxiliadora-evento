@@ -29,7 +29,7 @@
     *ngFor="let evento of eventos"
     class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-transform transform hover:-translate-y-2"
   >
-    <img [src]="evento.bannerImagem" alt="Imagem do evento" class="w-full h-48 object-cover" />
+    <img [src]="evento.capaImagem ?? evento.bannerImagem  " alt="Imagem do evento" class="w-full h-48 object-cover" />
     <div class="p-5 flex flex-col h-full">
       <h2 class="text-xl font-bold text-gray-800 mb-2">{{ evento.nome }}</h2>
       <span class="font-semibold text-gray-700">Organizador: {{ evento.organizadorNome }} </span>

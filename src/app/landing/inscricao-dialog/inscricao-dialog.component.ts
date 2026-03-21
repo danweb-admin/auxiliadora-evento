@@ -40,7 +40,7 @@ export class InscricaoDialogComponent implements OnInit{
   bloquearConfirmar = false;
   qrCodeLink: string  = ''
   qrCodePNG: string  = ''
-
+  
   pixCopiaECola: string = '';
   copiado = false;
   codigoInscricao: string = '';
@@ -202,7 +202,11 @@ export class InscricaoDialogComponent implements OnInit{
         this.toastr.warning('Selecione uma forma de pagamento! Pix ou Cartão')
         return;
       }
-      
+
+      if (this.valorInscricao == 0){
+        this.toastr.warning('Valor da Inscrição não pode ser 0.')
+        return;
+      }
       
       const payload = {
         ...this.inscricaoForm.value,
@@ -211,7 +215,7 @@ export class InscricaoDialogComponent implements OnInit{
           valor: this.inscricaoForm.value[c.nomeCampo]
         }))
       };
-
+      
       // Aqui você envia a forma de pagamento para o backend
       this.service.inscricao(payload).subscribe(resp => {
         
@@ -304,21 +308,57 @@ export class InscricaoDialogComponent implements OnInit{
         return;
       }
       
-      this.service.getServoByCPF(cpf).subscribe(resp => {
+      this.service.verificarCPF(cpf,this.eventoId).subscribe(resp => {
+        
         
         this.inscricaoForm.patchValue({
           servoId: resp.id,
           cpf: cpf,
-          nome: resp.name,
+          nome: resp.nome,
           email: resp.email.toLowerCase(),
-          telefone: resp.cellPhone,
-          decanatoId: resp.grupoOracao?.paroquiaCapela?.decanatoId,
-          grupoOracaoId: resp.grupoOracao?.id
+          telefone: resp.telefone,
+          decanatoId: resp.decanatoId,
+          grupoOracaoId: resp.grupoOracaoId
         });
+        
+        this.valorInscricao = resp.valorInscricao;
         
         this.inscricaoForm.get('semGrupo')?.disable();
         
         this.modoVisualizacao = true;
+        
+        if (resp.status == 'pagamento_confirmado'){
+          this.statusPagamento = 'PAGO'
+        }
+        
+        if (resp.status == 'pendente'){
+          if (resp.tipoPagamento === 'pix'){
+            this.toastr.success('A inscrição será efetivada após o pagamento, verifique seu email!');
+            
+            this.qrCode = true;
+            this.qrCodeLink = `data:image/png;base64,${resp.linkQrCodeBase64}`;
+            this.qrCodePNG = resp.linkQrCodePNG;
+            this.pixCopiaECola = resp.qrCodeCopiaCola;
+            this.mostrarCartao = false;
+            this.iniciarTimerPix();
+            this.iniciarVerificacaoPagamento();
+          }
+          
+          if (resp.tipoPagamento === 'cartao'){
+            this.toastr.success('Link para pagamento com cartão de crédito foi gerado com sucesso.!');
+            this.mostrarQRCode = false
+            this.linkPgtoCartao = resp.linkPgtoCartao;
+          }
+          
+          if (resp.tipoPagamento === 'dinheiro'){
+            this.toastr.success('Inscrição realizada com sucesso.!');
+            this.pagoDinheiro = true;
+            this.statusPagamento = 'PAGO';
+          }
+        }
+        
+        this.codigoInscricao = resp.codigoInscricao;
+        this.bloquearConfirmar = true;
         
       },(error: any) =>{
         if (error.status === 404) {

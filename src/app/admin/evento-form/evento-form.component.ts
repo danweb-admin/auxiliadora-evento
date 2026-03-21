@@ -76,6 +76,7 @@ export class EventoFormComponent implements OnInit {
       habilitarDinheiro: [false],
       qtdParcelas: [1],
       bannerImagem: ['', Validators.required],
+      capaImagem: ['', Validators.required],
       status: ['Criado', Validators.required],
       local: this.fb.group({
         id: [null],
@@ -411,6 +412,7 @@ export class EventoFormComponent implements OnInit {
           nome: evento.nome,
           slug: evento.slug,
           bannerImagem: evento.bannerImagem,
+          capaImagem: evento.capaImagem,
           dataInicio: this.formatarData(evento.dataInicio),
           dataFim: this.formatarData(evento.dataFim),
           organizadorNome: evento.organizadorNome,
@@ -511,6 +513,7 @@ export class EventoFormComponent implements OnInit {
       if (controle instanceof FormGroup || controle instanceof FormArray) {
         this.mostrarCamposInvalidos(controle, novoCaminho);
       } else if (controle?.invalid) {
+        this.toastr.info(`❌ Campo inválido: ${novoCaminho}`);
         console.warn(`❌ Campo inválido: ${novoCaminho}`, controle.errors);
       }
     });

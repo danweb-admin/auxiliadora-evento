@@ -82,8 +82,8 @@ export class EventoService {
     return this.http.get<any>(`${this.baseUrl}/eventos/${eventoId}/campos`);
   }
 
-  getServoByCPF(cpf: string): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/servos/by-cpf?cpf=${cpf}`);
+  verificarCPF(cpf: string, eventoId: string): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}//eventos/verificar-cpf?cpf=${cpf}&eventoId=${eventoId}`);
   }
 
   getLoteInscricao(eventoId: string): Observable<any> {
