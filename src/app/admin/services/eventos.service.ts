@@ -4,8 +4,8 @@ import { map, Observable } from "rxjs";
 
 @Injectable({ providedIn: 'root' })
 export class EventoService {
-  // private baseUrl = 'https://backend.rcc-londrina.online/api/v1';
-  private baseUrl = 'http://52.73.46.82:21000/api/v1';
+  private baseUrl = 'https://backend.auxiliadoraonline.com.br/api/v1';
+  // private baseUrl = 'http://52.73.46.82:21000/api/v1';
     // private baseUrl = 'http://localhost:5290/api/v1';
 
   constructor(private http: HttpClient) {}
