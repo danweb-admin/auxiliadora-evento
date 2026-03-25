@@ -32,6 +32,7 @@ export class InscricaoDialogComponent implements OnInit{
   permitirPagamento = false;
   
   valorInscricao!: number;
+  valorInscricaoOriginal!: number;
   formaSelecionada: 'pix' | 'cartao' | 'dinheiro' | null = null;
   modoVisualizacao = false;
   qrCode = false;
@@ -123,6 +124,7 @@ export class InscricaoDialogComponent implements OnInit{
         next: (valor) => {
           
           this.valorInscricao = valor;
+          this.valorInscricaoOriginal = valor;
           this.inscricaoForm.patchValue({valorInscricao: valor});
         },
         error: (e) => {
@@ -263,7 +265,7 @@ export class InscricaoDialogComponent implements OnInit{
     }
     
     voltar(){
-      
+      this.valorInscricao = this.valorInscricaoOriginal;
     }
     
     getEventoById(){
