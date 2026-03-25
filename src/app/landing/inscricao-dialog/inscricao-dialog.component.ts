@@ -266,6 +266,7 @@ export class InscricaoDialogComponent implements OnInit{
     
     voltar(){
       this.valorInscricao = this.valorInscricaoOriginal;
+      this.selectedTab = 'inscricao'
     }
     
     getEventoById(){
