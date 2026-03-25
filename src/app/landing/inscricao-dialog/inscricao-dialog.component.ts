@@ -72,55 +72,21 @@ export class InscricaoDialogComponent implements OnInit{
       nome: ['', Validators.required],
       email: ['', [Validators.required]],
       telefone: ['', Validators.required],
-      decanatoId: [''],
-      grupoOracaoId: [''],
-      semGrupo: [false],
       servoId: [''],
       tipoPagamento: this.formaSelecionada,
       valorInscricao: [],
-      numeroCartao: [],
-      nomeCartao: [],
-      validade: [],
-      cvv: [],
       quantidadeParcelas: [0]
       
     });
   }
   ngOnInit(): void {
-    this.carregarDecanato();
-    this.carregarGrupoOracoes();
+    // this.carregarDecanato();
+    // this.carregarGrupoOracoes();
     this.carregarCampos();
     this.getEventoById();
     
     
     this.inscricaoForm.patchValue({ eventoId: this.eventoId });
-    
-    this.inscricaoForm.get('decanatoId')?.valueChanges.subscribe(decanatoId => {
-      if (decanatoId) {
-        this.gruposComFiltro = this.filtrarGruposPorDecanato(decanatoId)
-      } else {
-        this.gruposComFiltro = [];
-        this.inscricaoForm.patchValue({ grupoOracaoId: '' });
-      }
-    });
-    
-    this.inscricaoForm.get('semGrupo')?.valueChanges.subscribe((value) => {
-      this.semGrupo = value;
-      
-      if (value) {
-        // desmarca e desativa decanato/grupo
-        this.inscricaoForm.patchValue({
-          decanatoId: '',
-          grupoOracaoId: ''
-        });
-        this.inscricaoForm.get('decanatoId')?.disable();
-        this.inscricaoForm.get('grupoOracaoId')?.disable();
-      } else {
-        // reativa os campos
-        this.inscricaoForm.get('decanatoId')?.enable();
-        this.inscricaoForm.get('grupoOracaoId')?.enable();
-      }
-    });
     
     this.buscaLoteInscricao();
     
@@ -328,14 +294,10 @@ export class InscricaoDialogComponent implements OnInit{
           cpf: cpf,
           nome: resp.nome,
           email: resp.email.toLowerCase(),
-          telefone: resp.telefone,
-          decanatoId: resp.decanatoId,
-          grupoOracaoId: resp.grupoOracaoId
+          telefone: resp.telefone
         });
         
         this.valorInscricao = resp.valorInscricao;
-        
-        this.inscricaoForm.get('semGrupo')?.disable();
         
         this.modoVisualizacao = true;
         
@@ -377,8 +339,7 @@ export class InscricaoDialogComponent implements OnInit{
           // Usuário não encontrado — habilita todos os campos
           this.inscricaoForm.get('nome')?.enable();
           this.inscricaoForm.get('telefone')?.enable();
-          this.inscricaoForm.get('decanatoId')?.enable();
-          this.inscricaoForm.get('grupoOracaoId')?.enable();
+          // this.inscricaoForm.get('decanatoId')?.enable();
           this.inscricaoForm.get('email')?.enable();
           
           this.toastr.info('Cadastro não encontrado, preencha seus dados.');
@@ -406,17 +367,17 @@ export class InscricaoDialogComponent implements OnInit{
       : 'Pagamento com Cartão de Crédito';
     }
     
-    carregarDecanato(){
-      this.service.getDecanatos().subscribe(resp => {
-        this.decanatos = resp;
-      })
-    }
+    // carregarDecanato(){
+    //   this.service.getDecanatos().subscribe(resp => {
+    //     this.decanatos = resp;
+    //   })
+    // }
     
-    carregarGrupoOracoes() {
-      this.service.getGrupoOracoes().subscribe(resp => {
-        this.grupos = resp;
-      })
-    }
+    // carregarGrupoOracoes() {
+    //   this.service.getGrupoOracoes().subscribe(resp => {
+    //     this.grupos = resp;
+    //   })
+    // }
     
     carregarCampos() {
       this.service.getCarregaCampos(this.eventoId)
@@ -436,10 +397,10 @@ export class InscricaoDialogComponent implements OnInit{
     }
     
     
-    filtrarGruposPorDecanato(decanatoId: string): any[] {
-      return this.grupos.filter(g =>
-        g.paroquiaCapela?.decanatoSetor?.id === decanatoId
-      );
-    }
+    // filtrarGruposPorDecanato(decanatoId: string): any[] {
+    //   return this.grupos.filter(g =>
+    //     g.paroquiaCapela?.decanatoSetor?.id === decanatoId
+    //   );
+    // }
   }
   
