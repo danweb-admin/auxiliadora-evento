@@ -32,6 +32,13 @@ export class EventoService {
     }));
   }
 
+  getRemoverInscricao(codigoInscricao: string): Observable<any> {
+    return this.http.get(`${this.baseUrl}/eventos/remover-inscricao/?codigoInscricao=${codigoInscricao}`)
+    .pipe(map((resp: any) => {
+      return resp;
+    }));
+  }
+
   getById(id: string): Observable<any> {
     return this.http.get(`${this.baseUrl}/eventos/${id}`)
     .pipe(map((resp: any) => {
@@ -88,6 +95,10 @@ export class EventoService {
 
   getLoteInscricao(eventoId: string): Observable<any> {
     return this.http.get<any[]>(`${this.baseUrl}/eventos/lote-inscricao?eventoId=${eventoId}`);
+  }
+
+  getLimiteParticipantes(eventoId: string): Observable<any> {
+    return this.http.get<any[]>(`${this.baseUrl}/eventos/verifica-limite-participantes?eventoId=${eventoId}`);
   }
 
   createUsuarioCheckin(payload: any): Observable<any>{

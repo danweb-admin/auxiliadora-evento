@@ -394,6 +394,10 @@
                                     <i class="bi bi-clipboard2-x fs-5"></i>
                                 </button>
                                 
+                                <!-- Isentar inscrição -->
+                                <button title="Remover inscrição" (click)="removerInscricao($event,i)" [disabled]="['pagamento_confirmado','isento'].includes(i.status)" class="text-orange-600 hover:text-orange-800 disabled:text-gray-400 disabled:cursor-not-allowed">
+                                    <i class="bi bi-trash fs-5"></i>
+                                </button>
                             </div>
                         </td>
                         

@@ -605,6 +605,25 @@ export class EventoFormComponent implements OnInit {
       }
     });
   }
+
+  removerInscricao(event: any, inscricao: any) {
+    event.preventDefault();
+    
+    if (!confirm(`Deseja remover a inscrição ${inscricao.codigoInscricao}?`)) {
+      return;
+    }
+    
+    // Exemplo:
+    this.eventoService.getRemoverInscricao(inscricao.codigoInscricao)
+    .subscribe({
+      next: () => {
+        this.toastr.info('Inscrição foi removida com sucesso!');
+      },
+      error: () => {
+        alert('Erro ao isentar inscrição.');
+      }
+    });
+  }
   
   private slugify(text: string): string {
     return text

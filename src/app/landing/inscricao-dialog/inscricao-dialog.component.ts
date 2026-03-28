@@ -41,7 +41,7 @@ export class InscricaoDialogComponent implements OnInit{
   bloquearConfirmar = false;
   qrCodeLink: string  = ''
   qrCodePNG: string  = ''
-  
+  inscricoesEncerradas: boolean = false;
   pixCopiaECola: string = '';
   copiado = false;
   codigoInscricao: string = '';
@@ -86,10 +86,11 @@ export class InscricaoDialogComponent implements OnInit{
     this.carregarCampos();
     this.getEventoById();
     
-    
     this.inscricaoForm.patchValue({ eventoId: this.eventoId });
     
     this.buscaLoteInscricao();
+
+    
     
   }
   
@@ -147,7 +148,7 @@ export class InscricaoDialogComponent implements OnInit{
           return;
         }
 
-        this.valorInscricao = this.valorInscricao * valueQtd;
+        this.valorInscricao = this.valorInscricaoOriginal * valueQtd;
         this.inscricaoForm.patchValue({valorInscricao: this.valorInscricao})
       }
 
@@ -159,6 +160,17 @@ export class InscricaoDialogComponent implements OnInit{
       this.selectedTab = 'pagamento'
       this.bloquearConfirmar = false;
       // lógica para ir à próxima aba (Forma de Pagamento)
+
+      // verifica se atingiu o limite de participantes
+      this.service.getLimiteParticipantes(this.eventoId).subscribe({
+        next: (valor) => {
+          if (!valor){
+            this.toastr.error('As inscrições desse Evento foram encerradas!');
+            this.bloquearConfirmar = true;
+            this.inscricoesEncerradas = true;
+          }
+        }
+      });
     }
     
     
@@ -265,7 +277,6 @@ export class InscricaoDialogComponent implements OnInit{
     }
     
     voltar(){
-      this.valorInscricao = this.valorInscricaoOriginal;
       this.selectedTab = 'inscricao'
     }
     
@@ -290,67 +301,6 @@ export class InscricaoDialogComponent implements OnInit{
         
         return;
       }
-      
-      this.service.verificarCPF(cpf,this.eventoId).subscribe(resp => {
-        this.inscricaoForm.patchValue({
-          servoId: resp.id,
-          cpf: cpf,
-          nome: resp.nome,
-          email: resp.email.toLowerCase(),
-          telefone: resp.telefone
-        });
-        
-        this.valorInscricao = resp.valorInscricao;
-        
-        this.modoVisualizacao = true;
-        
-        if (resp.status == 'pagamento_confirmado'){
-          this.statusPagamento = 'PAGO'
-        }
-        
-        if (resp.status == 'pendente'){
-          if (resp.tipoPagamento === 'pix'){
-            this.toastr.success('A inscrição será efetivada após o pagamento, verifique seu email!');
-            
-            this.qrCode = true;
-            this.qrCodeLink = `data:image/png;base64,${resp.linkQrCodeBase64}`;
-            this.qrCodePNG = resp.linkQrCodePNG;
-            this.pixCopiaECola = resp.qrCodeCopiaCola;
-            this.mostrarCartao = false;
-            this.iniciarTimerPix();
-            this.iniciarVerificacaoPagamento();
-          }
-          
-          if (resp.tipoPagamento === 'cartao'){
-            this.toastr.success('Link para pagamento com cartão de crédito foi gerado com sucesso.!');
-            this.mostrarQRCode = false
-            this.linkPgtoCartao = resp.linkPgtoCartao;
-          }
-          
-          if (resp.tipoPagamento === 'dinheiro'){
-            this.toastr.success('Inscrição realizada com sucesso.!');
-            this.pagoDinheiro = true;
-            this.statusPagamento = 'PAGO';
-          }
-        }
-        
-        this.codigoInscricao = resp.codigoInscricao;
-        this.bloquearConfirmar = true;
-        
-      },(error: any) =>{
-        if (error.status === 404) {
-          // Usuário não encontrado — habilita todos os campos
-          this.inscricaoForm.get('nome')?.enable();
-          this.inscricaoForm.get('telefone')?.enable();
-          // this.inscricaoForm.get('decanatoId')?.enable();
-          this.inscricaoForm.get('email')?.enable();
-          
-          this.toastr.info('Cadastro não encontrado, preencha seus dados.');
-        } else {
-          this.toastr.error('Erro ao buscar CPF.');
-        }
-        
-      });
     }
     
     irParaPagamento(event: any){
@@ -396,7 +346,22 @@ export class InscricaoDialogComponent implements OnInit{
             )
           );
         });
+        
+        this.inscricaoForm.get('quantidade')?.valueChanges.subscribe(quantidade => {
+          
+          if (quantidade != null){
+            
+            if (quantidade == 0){
+              this.toastr.error('Quantidade não pode ser 0!');
+              return;
+            }
+
+            this.valorInscricao = this.valorInscricaoOriginal * quantidade;
+            this.inscricaoForm.patchValue({valorInscricao: this.valorInscricao})
+          }
+        });
       });
+      
     }
     
     

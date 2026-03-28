@@ -29,14 +29,14 @@
   }
 
   &:hover {
-    border-color: #f472b6; /* rosa claro no hover */
-    box-shadow: 0 0 0 3px rgba(244, 114, 182, 0.2);
+    border-color: #d9dcff; /* rosa claro no hover */
+    box-shadow: 0 0 0 3px rgba(132, 180, 235, 0.2);
   }
 
   &.selected {
-    border-color: #ec4899; /* rosa principal */
-    background-color: #fdf2f8;
-    box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.2);
+    border-color: #3936CD; /* rosa principal */
+    background-color: #eef0ff;
+    box-shadow: 0 0 0 3px rgba(132, 180, 235, 0.2);
   }
 }
 
@@ -58,7 +58,7 @@ button:disabled {
   margin-bottom: 1rem;
   span {
     font-size: 1.2rem;
-    color: #ec4899;
+    color: #3936CD;
     font-weight: 600;
   }
 }

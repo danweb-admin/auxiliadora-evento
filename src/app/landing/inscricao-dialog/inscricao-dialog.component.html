@@ -22,7 +22,7 @@
         
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">Nome</label>
-          <input type="text" formControlName="nome" placeholder="Digite seu Nome" class="w-full border rounded p-2 text-sm focus:ring-blue-500 focus:border-blue-500" [ngClass]="{ 'readonly-select': modoVisualizacao }" oninput="this.value = this.value.toUpperCase()"/>
+          <input type="text" formControlName="nome" placeholder="Digite seu Nome e Sobrenome" class="w-full border rounded p-2 text-sm focus:ring-blue-500 focus:border-blue-500" [ngClass]="{ 'readonly-select': modoVisualizacao }" oninput="this.value = this.value.toUpperCase()"/>
         </div>
         
         <div>
@@ -86,7 +86,7 @@
           </div>
           
         </div>
-
+        
         <p class="text-gray-700 mb-4">
           Valor da inscrição:
           <span class="font-semibold text-blue-600 text-lg">
@@ -102,19 +102,26 @@
       <!-- PAGAMENTO -->
       <div *ngIf="selectedTab === 'pagamento'" class="space-y-3">
         
-        <h3 class="text-lg font-bold mb-3">Escolha a forma de pagamento</h3>
+        <div *ngIf="inscricoesEncerradas" class="text-center p-4">
+          <h4 class="text-red-600 font-semibold">Inscrições encerradas</h4>
+          <p class="mt-2">
+            O limite máximo de participantes para este evento já foi atingido.
+          </p>
+        </div>
         
-        <h3 class="text-lg font-bold mb-3">Após efetuar o pagamento confira sua Caixa de Email/Lixeira</h3>
+        <h3 *ngIf="!inscricoesEncerradas" class="text-lg font-bold mb-3">Escolha a forma de pagamento</h3>
+        
+        <h3 *ngIf="!inscricoesEncerradas" class="text-lg font-bold mb-3">Após efetuar o pagamento confira sua Caixa de Email/Lixeira</h3>
         
         
-        <p class="text-gray-700 mb-4">
+        <p *ngIf="!inscricoesEncerradas" class="text-gray-700 mb-4">
           Valor da inscrição:
           <span class="font-semibold text-blue-600 text-lg">
             {{ valorInscricao | currency:'BRL':'symbol':'1.2-2' }}
           </span>
         </p>
         
-        <p class="text-gray-700 mb-4">
+        <p *ngIf="!inscricoesEncerradas" class="text-gray-700 mb-4">
           Inscrição:
           <span class="font-semibold text-blue-600 text-lg">
             {{ codigoInscricao }}
@@ -122,7 +129,7 @@
         </p>
         
         <!-- SUCESSO -->
-        <div *ngIf="statusPagamento === 'PAGO'" class="text-center mt-6">
+        <div *ngIf="statusPagamento === 'PAGO' && !inscricoesEncerradas" class="text-center mt-6">
           <h3 class="text-green-600 text-xl font-bold">
             ✅ Pagamento confirmado!
           </h3>
@@ -155,7 +162,7 @@
         
         
         <!-- CONTEÚDO NORMAL (PIX / CARTÃO) -->
-        <ng-container *ngIf="statusPagamento !== 'PAGO'">
+        <ng-container *ngIf="statusPagamento !== 'PAGO' && !inscricoesEncerradas">
           
           <div *ngIf="mostrarQRCode && habilitarPix" class="pagamento-card" [class.selected]="formaSelecionada === 'pix'" (click)="formaPagamento('pix')">
             
@@ -238,7 +245,7 @@
         
         <div class="flex justify-between mt-5">
           <button type="button" (click)="voltar()" class="px-4 py-2 border rounded text-sm hover:bg-gray-100" [disabled]="bloquearConfirmar"> ← Voltar</button>
-          <button type="submit" class="px-4 py-2 bg-pink-500 text-white text-sm rounded hover:bg-pink-600" [disabled]="bloquearConfirmar">Confirmar</button>
+          <button type="submit" class="px-4 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600" [disabled]="bloquearConfirmar">Confirmar</button>
         </div>
       </div>
     </form>
