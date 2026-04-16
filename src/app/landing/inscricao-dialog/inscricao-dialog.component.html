@@ -16,22 +16,22 @@
       <!-- INSCRIÇÃO -->
       <div *ngIf="selectedTab === 'inscricao'" class="space-y-2">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">CPF</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1">{{ cpfLabel }}</label>
           <input type="text" formControlName="cpf" mask="000.000.000-00" (change)="validarCpf($event)" #cpfInput placeholder="Digite seu CPF" class="w-full border rounded p-2 text-sm focus:ring-blue-500 focus:border-blue-500" />
         </div>
         
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Nome</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1">{{nomeLabel}}</label>
           <input type="text" formControlName="nome" placeholder="Digite seu Nome e Sobrenome" class="w-full border rounded p-2 text-sm focus:ring-blue-500 focus:border-blue-500" [ngClass]="{ 'readonly-select': modoVisualizacao }" oninput="this.value = this.value.toUpperCase()"/>
         </div>
         
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1">{{emailLabel}}</label>
           <input type="email" formControlName="email" placeholder="Digite seu Email" class="w-full border rounded p-2 text-sm focus:ring-blue-500 focus:border-blue-500" />
         </div>
         
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1">{{telefoneLabel}}</label>
           <input type="text" formControlName="telefone" mask="(00) 0 0000-0000" placeholder="Digite seu Telefone" class="w-full border rounded p-2 text-sm focus:ring-blue-500 focus:border-blue-500" [ngClass]="{ 'readonly-select': modoVisualizacao }" />
         </div>
         

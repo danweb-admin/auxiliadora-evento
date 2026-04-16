@@ -3,6 +3,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { EventoService } from 'src/app/admin/services/eventos.service';
 import { ValidateService } from '../services/validate.service';
 import { ToastrService } from 'ngx-toastr';
+import { ActivatedRoute, Route, Router } from '@angular/router';
 
 interface Decanato {
   id: string;
@@ -62,10 +63,16 @@ export class InscricaoDialogComponent implements OnInit{
   statusPagamento: 'PENDENTE' | 'PAGO' | 'EXPIRADO' = 'PENDENTE';
   private pollingPix: any;
   
+  cpfLabel = 'CPF';
+  nomeLabel = 'Nome';
+  emailLabel = 'Email';
+  telefoneLabel = 'Telefone';
+  
   constructor(private fb: FormBuilder,
     private service: EventoService,
     private validateService: ValidateService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private route: ActivatedRoute
   ) {
     this.inscricaoForm = this.fb.group({
       eventoId: this.eventoId,
@@ -90,7 +97,16 @@ export class InscricaoDialogComponent implements OnInit{
     
     this.buscaLoteInscricao();
 
+    const eventoId = this.route.snapshot.paramMap.get('id');
+
     
+    if (this.eventoId.toUpperCase() === 'CA9662DC-35EA-4681-A599-D51FBD9577E3'){
+      this.cpfLabel = 'CPF Noivo';
+      this.nomeLabel = 'Nome Noivo';
+      this.emailLabel = 'Email Noivo';
+      this.telefoneLabel = 'Telefone Noivo';
+
+    }
     
   }
   
@@ -142,25 +158,25 @@ export class InscricaoDialogComponent implements OnInit{
       
       if (quantidade != null){
         var valueQtd = quantidade?.value;
-
+        
         if (valueQtd == 0){
           this.toastr.error('Quantidade não pode ser 0!');
           return;
         }
-
+        
         this.valorInscricao = this.valorInscricaoOriginal * valueQtd;
         this.inscricaoForm.patchValue({valorInscricao: this.valorInscricao})
       }
-
+      
       if (this.inscricaoForm.invalid) {
         this.inscricaoForm.markAllAsTouched();
         return;
       }
-
+      
       this.selectedTab = 'pagamento'
       this.bloquearConfirmar = false;
       // lógica para ir à próxima aba (Forma de Pagamento)
-
+      
       // verifica se atingiu o limite de participantes
       this.service.getLimiteParticipantes(this.eventoId).subscribe({
         next: (valor) => {
@@ -196,7 +212,7 @@ export class InscricaoDialogComponent implements OnInit{
         this.toastr.warning('Selecione uma forma de pagamento! Pix ou Cartão')
         return;
       }
-
+      
       if (this.valorInscricao == 0){
         this.toastr.warning('Valor da Inscrição não pode ser 0.')
         return;
@@ -355,7 +371,7 @@ export class InscricaoDialogComponent implements OnInit{
               this.toastr.error('Quantidade não pode ser 0!');
               return;
             }
-
+            
             this.valorInscricao = this.valorInscricaoOriginal * quantidade;
             this.inscricaoForm.patchValue({valorInscricao: this.valorInscricao})
           }
@@ -371,4 +387,5 @@ export class InscricaoDialogComponent implements OnInit{
     //   );
     // }
   }
+  
   

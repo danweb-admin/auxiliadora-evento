@@ -16,6 +16,8 @@ export class EventoLandingComponent implements OnInit {
   grupos: any[] = [];
   wazeUrl!: SafeResourceUrl;
   menuAberto = false;
+  
+  pregadoresSection = 'Pregadores'; 
 
   constructor(
     private route: ActivatedRoute,
@@ -31,9 +33,16 @@ export class EventoLandingComponent implements OnInit {
 
     this.service.getSlug(slug).subscribe(ev => {
       this.evento = ev;
+      console.log(this.evento)
       this.gerarMapaWaze();
 
+      if (this.evento.id.toUpperCase() === 'CA9662DC-35EA-4681-A599-D51FBD9577E3'){
+        this.pregadoresSection = ''
+      }
+
     });
+
+
     
   }
   
