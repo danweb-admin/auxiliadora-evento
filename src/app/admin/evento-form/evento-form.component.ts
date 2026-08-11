@@ -128,6 +128,8 @@ export class EventoFormComponent implements OnInit {
     }
     
     this.aplicarFiltros();
+
+    
     
     this.searchTerm.valueChanges.pipe(
       debounceTime(250)
@@ -386,6 +388,8 @@ export class EventoFormComponent implements OnInit {
           console.error('Evento não encontrado!');
           return;
         }
+        
+        console.log(evento.inscricoes)
         
         this.eventoForm.patchValue({
           id: evento.id,
