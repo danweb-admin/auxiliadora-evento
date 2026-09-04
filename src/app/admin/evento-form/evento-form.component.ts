@@ -37,6 +37,8 @@ export class EventoFormComponent implements OnInit {
   
   // Lista filtrada que será exibida
   inscricoesFiltradas: any[] = [];
+  isModalPerguntasRespostasOpen = false;
+  
   // control de busca (reactive)
   searchTerm = new FormControl('');
   
@@ -128,7 +130,7 @@ export class EventoFormComponent implements OnInit {
     }
     
     this.aplicarFiltros();
-
+    
     
     
     this.searchTerm.valueChanges.pipe(
@@ -136,6 +138,15 @@ export class EventoFormComponent implements OnInit {
     ).subscribe(() => {
       this.aplicarFiltros();
     });
+  }
+  
+  abrirModalPerguntasRespostas(inscricao: any) {
+    this.inscricaoSelecionada = inscricao;
+    this.isModalPerguntasRespostasOpen = true;
+  }
+  
+  fecharModalPerguntasRespostas() {
+    this.isModalPerguntasRespostasOpen = false;
   }
   
   // Total de páginas calculadas dinamicamente
@@ -205,33 +216,33 @@ export class EventoFormComponent implements OnInit {
   
   downloadCsv(e: any) {
     e.preventDefault();
-
+    
     if (this.eventoId === null){
       
       return
     }
-
-
+    
+    
     this.eventoService.exportCSV(this.eventoId).subscribe(resp => {
-
-    const blob = resp.body!;
-    const contentDisposition = resp.headers.get('content-disposition');
-    let fileName = 'inscricoes.xlsx';
-
-    if (contentDisposition) {
-      const match = contentDisposition.match(/filename="(.+)"/);
-      if (match) fileName = match[1];
-    }
-
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-
-    a.href = url;
-    a.download = fileName;
-    a.click();
-
-    window.URL.revokeObjectURL(url);
-  });
+      
+      const blob = resp.body!;
+      const contentDisposition = resp.headers.get('content-disposition');
+      let fileName = 'inscricoes.xlsx';
+      
+      if (contentDisposition) {
+        const match = contentDisposition.match(/filename="(.+)"/);
+        if (match) fileName = match[1];
+      }
+      
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      
+      a.href = url;
+      a.download = fileName;
+      a.click();
+      
+      window.URL.revokeObjectURL(url);
+    });
   }
   
   
@@ -371,7 +382,7 @@ export class EventoFormComponent implements OnInit {
   getInformacoesAdicionais(): FormArray { 
     return this.eventoForm.get('informacoesAdicionais') as FormArray; 
   }
-
+  
   getEventoCampos(): FormArray { 
     return this.eventoForm.get('eventoCampos') as FormArray; 
   }
@@ -382,7 +393,7 @@ export class EventoFormComponent implements OnInit {
         const evento = Array.isArray(dados)
         ? dados.find(e => e.id == id)
         : dados;
-
+        
         
         if (!evento) {
           console.error('Evento não encontrado!');
@@ -405,7 +416,7 @@ export class EventoFormComponent implements OnInit {
           status: evento.status,
           limiteParticipantes: evento.limiteParticipantes,
           taxaServico: evento.taxaServico,
-
+          
           local: evento.local || {},
           sobre: evento.sobre || {},
           informacoesAdicionais: evento.informacoesAdicionais || {},
@@ -419,7 +430,7 @@ export class EventoFormComponent implements OnInit {
           qtdParcelas: evento.qtdParcelas, 
           
         });
-
+        
         // this.getSobre().clear();
         this.getPregadores().clear();
         this.getProgramacao().clear();
@@ -587,7 +598,7 @@ export class EventoFormComponent implements OnInit {
       }
     });
   }
-
+  
   removerInscricao(event: any, inscricao: any) {
     event.preventDefault();
     

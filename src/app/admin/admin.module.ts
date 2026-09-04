@@ -13,6 +13,7 @@ import { LoginComponent } from './login/login.component';
 import { AuthLayoutComponent } from './auth/auth-layout.component';
 import { UsuariosFormComponent } from './usuarios/usuarios-form/usuario-form.component';
 import { UsuariosListComponent } from './usuarios/usuarios-list/usuarios-list.component';
+import { ModalPerguntasRespostasComponent } from './modal-perguntas-respostas/modal-perguntas-resposts.component';
 
 
 @NgModule({
@@ -22,10 +23,12 @@ import { UsuariosListComponent } from './usuarios/usuarios-list/usuarios-list.co
     SectionListComponent,
     SectionFormComponent,
     ModalReenvioComponent,
+    ModalPerguntasRespostasComponent,
     LoginComponent,
     AuthLayoutComponent,
     UsuariosFormComponent,
-    UsuariosListComponent
+    UsuariosListComponent,
+    
   ],
   imports: [
     CommonModule,

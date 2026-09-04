@@ -1,0 +1,70 @@
+<div
+    *ngIf="isOpen"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4"
+>
+    <div
+        class="w-full max-w-2xl rounded-lg bg-white shadow-xl"
+    >
+
+        <!-- Cabeçalho -->
+        <div class="flex items-center justify-between border-b px-6 py-4">
+            <div>
+                <h2 class="text-xl font-semibold text-gray-800">
+                    Perguntas e Respostas
+                </h2>
+
+                <p
+                    *ngIf="inscricao?.codigoInscricao"
+                    class="mt-1 text-sm text-gray-500"
+                >
+                    Inscrição: {{ inscricao.codigoInscricao }}
+                </p>
+            </div>
+
+            <button
+                type="button"
+                (click)="fechar()"
+                class="text-2xl text-gray-400 hover:text-gray-600"
+            >
+                &times;
+            </button>
+        </div>
+
+        <!-- Conteúdo -->
+        <div class="max-h-[60vh] overflow-y-auto px-6 py-5">
+
+            <!-- Carregando -->
+            
+
+            <!-- Perguntas e respostas -->
+            <textarea
+                class="form-control"
+                rows="10"
+                readonly
+                [value]="textoPerguntasRespostas">
+            </textarea>
+
+            <!-- Nenhuma pergunta -->
+            <div
+                *ngIf="!carregando && perguntasRespostas.length === 0"
+                class="py-8 text-center text-sm text-gray-500"
+            >
+                Nenhuma pergunta e resposta encontrada para esta inscrição.
+            </div>
+        </div>
+
+        <!-- Rodapé -->
+        <div
+            class="flex justify-end border-t bg-gray-50 px-6 py-4"
+        >
+            <button
+                type="button"
+                (click)="fechar()"
+                class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
+            >
+                Fechar
+            </button>
+        </div>
+
+    </div>
+</div>
